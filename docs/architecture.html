@@ -78,6 +78,8 @@ figcaption{margin-top:12px;font-size:13px;color:var(--ink-3);max-width:80ch}
 @keyframes dashflow{to{stroke-dashoffset:-28}}
 #map .flowedge{stroke:var(--line-strong);stroke-width:1.6;fill:none;opacity:.18;transition:opacity .3s}
 #map .flowedge.on{stroke:var(--c-proc);stroke-width:2.6;opacity:1;stroke-dasharray:9 5;animation:dashflow .85s linear infinite}
+/* "past" = this edge already ran in an earlier session; shown static and grey, never animated */
+#map .flowedge.past{stroke:var(--ink-3);stroke-width:1.6;opacity:.6;stroke-dasharray:2 5;animation:none}
 #map .node{transition:opacity .3s}
 #map .node.dim{opacity:.28}
 #map .elbl{transition:opacity .3s;opacity:.2}
@@ -450,6 +452,8 @@ footer{padding:36px 0 0;color:var(--ink-3);font-size:12.5px}
         <text class="elbl f-sync" x="520" y="748">push（MEM_AUTOPUSH=1）</text>
         <text class="elbl f-sync" x="196" y="586">pull · ff-only</text>
         <text class="elbl f-sync" x="556" y="586">post-merge 觸發</text>
+        <!-- startup only: explains where columns 2 and 3 got their memory -->
+        <text class="elbl f-startup" x="636" y="284">上次收工已生成</text>
       </svg>
     </div>
     <figcaption id="mapcap">Stage 1 — 由下往上：<code>status.sh</code> 讀 tier-1 後注入 Claude Code；Codex 與 Antigravity 直接從各自的 entry 檔讀取（區塊在上次收工時就已生成）。</figcaption>
@@ -583,12 +587,12 @@ git config core.hooksPath .githooks         <span class="cm"># 每個 clone 都�
   var map=document.getElementById('map'),cap=document.getElementById('mapcap'),
       note=document.getElementById('mapnote'),btns=document.querySelectorAll('.controls button');
   var caps={
-    startup:'Stage 1 — 由下往上：<code>status.sh</code> 讀 tier-1 後注入 Claude Code；Codex 與 Antigravity 直接從各自的 entry 檔讀取（區塊在上次收工時就已生成）。',
+    startup:'Stage 1 — 三個 agent 都拿到記憶，但來源不同：<b>橘色實線</b>是本次開局即時發生的（<code>status.sh</code> 讀 tier-1 注入 Claude Code）；<b>灰色虛線</b>是<b>上一次收工</b>就已完成的寫入，Codex 與 Antigravity 讀的是那時留下的區塊。',
     complete:'Stage 3 — agent 直接改寫 <code>handoff.md</code>（左側繞道，刻意跳過讀取路徑）；<code>sync-entry-files.sh</code> 據此再生兩個 entry 檔的 AUTO-MEMORY 區塊；<code>commit-handoff.sh</code> 提交記憶，經 <code>pre-commit</code> 把關。',
     sync:'Stage 4 — <code>MEM_AUTOPUSH=1</code> 時記憶 commit 被推到 remote；另一台 <code>pull --ff-only</code> 取回，<code>post-merge</code> 刷新其 entry 檔。完全沒有 remote 也可以，只是少了這一層。'
   };
   var notes={
-    startup:'<b>為什麼 col 2、3 在開局時沒有連到資料層？</b> 因為那時不需要 —— handoff 早在上一次收工由 <span class="mono">sync-entry-files.sh</span> 生成進它們的 entry 檔了。Claude Code 走「執行腳本」路徑，另外兩者走「靜態檔案」路徑，這正是本設計的核心取捨。',
+    startup:'<b>三個 agent 都亮，但只有一條是「現在」發生的。</b> Claude Code 能自動<em>執行指令</em>，所以走橘色實線的即時鏈路；Codex 與 Antigravity 只能自動載入<span class="mono">靜態檔案</span>，它們的記憶是上次收工由 <span class="mono">sync-entry-files.sh</span> 事先寫進去的（灰色虛線）。<b>這個時間差正是本設計的核心取捨</b> —— 代價是它們看不到尚未提交的在製品。',
     complete:'<b>門檻很重要。</b> 唯讀提問、瑣碎解釋、無變更 review <em>完全不寫檔</em>。記憶自動 commit 是因為它本地且可逆；<span class="mono">你的</span>原始碼永遠不會被自動提交（commit 受 pathspec 限定）。',
     sync:'<b>只做 fast-forward。</b> 自動同步用 <span class="mono">git pull --ff-only</span> 並受三重守衛保護 —— 開關開啟、工作樹乾淨、本地無分岔。要嘛乾淨快轉，要嘛中止且什麼都不動；<span class="mono">rebase</span>、<span class="mono">merge</span>、<span class="mono">reset</span> 與 force-push 永不自動執行。'
   };
@@ -602,10 +606,13 @@ git config core.hooksPath .githooks         <span class="cm"># 每個 clone 都�
     complete:['claude','tier1','sync','commit','agents-md','rules','precommit'],
     sync:['remote','postmerge','precommit','tier1','sync','agents-md','rules']
   };
+  // edges that already ran in an EARLIER session — drawn static/grey, not animated
+  var past={startup:['e-c3','e-c4'],complete:[],sync:[]};
   function setFlow(n){
     map.setAttribute('data-flow',n);
-    map.querySelectorAll('.flowedge').forEach(function(p){p.classList.remove('on');});
+    map.querySelectorAll('.flowedge').forEach(function(p){p.classList.remove('on','past');});
     edges[n].forEach(function(id){var e=document.getElementById(id);if(e)e.classList.add('on');});
+    past[n].forEach(function(id){var e=document.getElementById(id);if(e)e.classList.add('past');});
     map.querySelectorAll('.elbl').forEach(function(t){t.classList.toggle('on',t.classList.contains('f-'+n));});
     map.querySelectorAll('.node').forEach(function(g){g.classList.toggle('dim',lit[n].indexOf(g.dataset.n)===-1);});
     cap.innerHTML=caps[n];note.innerHTML=notes[n];
