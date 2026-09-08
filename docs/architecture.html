@@ -290,7 +290,7 @@ footer{padding:36px 0 0;color:var(--ink-3);font-size:12.5px}
 
   <figure>
     <div class="fig" id="map" data-flow="startup">
-      <svg viewBox="0 0 1100 720" role="img" aria-label="Five architectural layers stacked bottom to top: git infrastructure, data store, processing scripts, entry points, and the three consuming agents.">
+      <svg viewBox="0 0 1160 776" role="img" aria-label="Five architectural layers stacked bottom to top: git infrastructure, data store, processing scripts, entry points, and the three consuming agents.">
         <defs><marker id="a3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>
 
         <!-- ============ band containers ============ -->
@@ -420,17 +420,17 @@ footer{padding:36px 0 0;color:var(--ink-3);font-size:12.5px}
 
         <!-- ============ COMPLETION edges ============ -->
         <!-- agent writes handoff: deliberately bypasses the read path, routed on the left -->
-        <path id="e-c1" class="flowedge" d="M296,118 C196,150 150,210 150,380 C150,470 150,498 170,498" marker-end="url(#a3)" color="var(--c-proc)"/>
+        <path id="e-c1" class="flowedge" d="M290,116 C212,126 140,152 140,232 C140,350 140,450 140,474 C140,490 152,498 170,498" marker-end="url(#a3)" color="var(--c-proc)"/>
         <path id="e-c2" class="flowedge" d="M360,450 C440,432 600,414 600,386" marker-end="url(#a3)" color="var(--c-proc)"/>
         <path id="e-c3" class="flowedge" d="M614,310 L614,248" marker-end="url(#a3)" color="var(--c-proc)"/>
         <path id="e-c4" class="flowedge" d="M700,312 C790,300 874,286 874,248" marker-end="url(#a3)" color="var(--c-proc)"/>
         <path id="e-c5" class="flowedge" d="M424,450 C620,436 888,414 888,386" marker-end="url(#a3)" color="var(--c-proc)"/>
-        <path id="e-c6" class="flowedge" d="M1030,352 C1074,392 1074,570 1030,644" marker-end="url(#a3)" color="var(--c-proc)"/>
+        <path id="e-c6" class="flowedge" d="M1030,352 C1100,398 1100,572 1030,644" marker-end="url(#a3)" color="var(--c-proc)"/>
 
         <!-- ============ SYNC edges ============ -->
-        <path id="e-y1" class="flowedge" d="M748,660 L456,660" marker-end="url(#a3)" color="var(--c-proc)"/>
-        <path id="e-y2" class="flowedge" d="M312,610 L312,550" marker-end="url(#a3)" color="var(--c-proc)"/>
-        <path id="e-y3" class="flowedge" d="M600,610 L600,550" marker-end="url(#a3)" color="var(--c-proc)"/>
+        <!-- push: routed UNDER the git band so it never crosses the post-merge box -->
+        <path id="e-y1" class="flowedge" d="M888,684 C888,726 312,726 312,686" marker-end="url(#a3)" color="var(--c-proc)"/>
+        <path id="e-y2" class="flowedge" d="M312,610 L312,548" marker-end="url(#a3)" color="var(--c-proc)"/>
 
         <!-- ============ edge labels ============ -->
         <text class="elbl f-startup" x="196" y="424">讀 tier-1</text>
@@ -438,15 +438,15 @@ footer{padding:36px 0 0;color:var(--ink-3);font-size:12.5px}
         <text class="elbl f-startup" x="196" y="156">開局自動</text>
         <text class="elbl f-startup" x="484" y="156">自動載入</text>
         <text class="elbl f-startup" x="772" y="156">自動載入</text>
-        <text class="elbl f-complete" x="60"  y="300">寫 handoff</text>
-        <text class="elbl f-complete" x="404" y="424">讀 handoff</text>
+        <text class="elbl f-complete" x="56"  y="300">寫 handoff</text>
+        <text class="elbl f-complete" x="466" y="412">讀 handoff</text>
         <text class="elbl f-complete" x="500" y="284">生成區塊</text>
-        <text class="elbl f-complete" x="742" y="290">生成區塊</text>
-        <text class="elbl f-complete" x="600" y="440">提交記憶</text>
-        <text class="elbl f-complete" x="1044" y="500">通過檢查</text>
-        <text class="elbl f-sync" x="536" y="678">push（選用）</text>
-        <text class="elbl f-sync" x="196" y="590">pull · ff-only</text>
-        <text class="elbl f-sync" x="484" y="590">刷新 entry 檔</text>
+        <text class="elbl f-complete" x="742" y="292">生成區塊</text>
+        <text class="elbl f-complete" x="756" y="398">提交記憶</text>
+        <text class="elbl f-complete" x="1040" y="496">通過 pre-commit</text>
+        <text class="elbl f-sync" x="520" y="748">push（MEM_AUTOPUSH=1）</text>
+        <text class="elbl f-sync" x="196" y="586">pull · ff-only</text>
+        <text class="elbl f-sync" x="756" y="586">再生 entry 檔 ↗</text>
       </svg>
     </div>
     <figcaption id="mapcap">Stage 1 — 由下往上：<code>status.sh</code> 讀 tier-1 後注入 Claude Code；Codex 與 Antigravity 直接從各自的 entry 檔讀取（區塊在上次收工時就已生成）。</figcaption>
@@ -592,7 +592,7 @@ git config core.hooksPath .githooks         <span class="cm"># 每個 clone 都�
   var edges={
     startup:['e-s1','e-s2','e-s3','e-s4','e-s5'],
     complete:['e-c1','e-c2','e-c3','e-c4','e-c5','e-c6'],
-    sync:['e-y1','e-y2','e-y3','e-c3','e-c4']
+    sync:['e-y1','e-y2','e-c2','e-c3','e-c4']
   };
   var lit={
     startup:['tier1','status','claude-md','agents-md','rules','claude','codex','anti'],
