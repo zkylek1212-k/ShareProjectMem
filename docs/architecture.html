@@ -431,6 +431,8 @@ footer{padding:36px 0 0;color:var(--ink-3);font-size:12.5px}
         <!-- push: routed UNDER the git band so it never crosses the post-merge box -->
         <path id="e-y1" class="flowedge" d="M888,684 C888,726 312,726 312,686" marker-end="url(#a3)" color="var(--c-proc)"/>
         <path id="e-y2" class="flowedge" d="M312,610 L312,548" marker-end="url(#a3)" color="var(--c-proc)"/>
+        <!-- post-merge runs sync-entry-files.sh; routed up the 16px channel between tier2 and archive -->
+        <path id="e-y3" class="flowedge" d="M614,610 C700,600 744,580 744,500 C744,440 700,400 690,386" marker-end="url(#a3)" color="var(--c-proc)"/>
 
         <!-- ============ edge labels ============ -->
         <text class="elbl f-startup" x="196" y="424">讀 tier-1</text>
@@ -439,14 +441,15 @@ footer{padding:36px 0 0;color:var(--ink-3);font-size:12.5px}
         <text class="elbl f-startup" x="484" y="156">自動載入</text>
         <text class="elbl f-startup" x="772" y="156">自動載入</text>
         <text class="elbl f-complete" x="56"  y="300">寫 handoff</text>
-        <text class="elbl f-complete" x="466" y="412">讀 handoff</text>
-        <text class="elbl f-complete" x="500" y="284">生成區塊</text>
-        <text class="elbl f-complete" x="742" y="292">生成區塊</text>
+        <!-- these three edges light in BOTH completion and sync, so their labels carry both classes -->
+        <text class="elbl f-complete f-sync" x="466" y="412">讀 handoff</text>
+        <text class="elbl f-complete f-sync" x="500" y="284">生成區塊</text>
+        <text class="elbl f-complete f-sync" x="742" y="292">生成區塊</text>
         <text class="elbl f-complete" x="756" y="398">提交記憶</text>
-        <text class="elbl f-complete" x="1040" y="496">通過 pre-commit</text>
+        <text class="elbl f-complete" x="896" y="402">通過 pre-commit</text>
         <text class="elbl f-sync" x="520" y="748">push（MEM_AUTOPUSH=1）</text>
         <text class="elbl f-sync" x="196" y="586">pull · ff-only</text>
-        <text class="elbl f-sync" x="756" y="586">再生 entry 檔 ↗</text>
+        <text class="elbl f-sync" x="556" y="586">post-merge 觸發</text>
       </svg>
     </div>
     <figcaption id="mapcap">Stage 1 — 由下往上：<code>status.sh</code> 讀 tier-1 後注入 Claude Code；Codex 與 Antigravity 直接從各自的 entry 檔讀取（區塊在上次收工時就已生成）。</figcaption>
@@ -592,7 +595,7 @@ git config core.hooksPath .githooks         <span class="cm"># 每個 clone 都�
   var edges={
     startup:['e-s1','e-s2','e-s3','e-s4','e-s5'],
     complete:['e-c1','e-c2','e-c3','e-c4','e-c5','e-c6'],
-    sync:['e-y1','e-y2','e-c2','e-c3','e-c4']
+    sync:['e-y1','e-y2','e-y3','e-c2','e-c3','e-c4']
   };
   var lit={
     startup:['tier1','status','claude-md','agents-md','rules','claude','codex','anti'],
