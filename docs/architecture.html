@@ -280,7 +280,7 @@ footer{padding:36px 0 0;color:var(--ink-3);font-size:12.5px}
 <!-- ===================== 4. SYSTEM ARCHITECTURE ===================== -->
 <section>
   <div class="sec-head"><span class="sec-n">04</span><h2>System Architecture</h2></div>
-  <p class="lede">分層元件圖。選一個階段，動線會即時反映該階段實際流經的路徑。</p>
+  <p class="lede">五個分層，由下而上：資料在最底層，往上經過處理層與進入點，最後抵達 agent。Git 層橫跨在旁強制執行。選一個階段，動線會反映該階段實際流經的路徑。</p>
 
   <div class="controls" role="group" aria-label="選擇生命週期階段">
     <button data-flow="startup" aria-pressed="true">▸ Stage 1 · Startup</button>
@@ -290,123 +290,169 @@ footer{padding:36px 0 0;color:var(--ink-3);font-size:12.5px}
 
   <figure>
     <div class="fig" id="map" data-flow="startup">
-      <svg viewBox="0 0 1040 560" role="img" aria-label="Layered architecture: agents, entry layer, memory store, git services, remote.">
+      <svg viewBox="0 0 1100 720" role="img" aria-label="Five architectural layers stacked bottom to top: git infrastructure, data store, processing scripts, entry points, and the three consuming agents.">
         <defs><marker id="a3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>
 
-        <text class="tag" x="24" y="24">OUTPUT LAYER · AGENTS</text>
-        <text class="tag" x="250" y="24">SERVICE LAYER · ENTRY</text>
-        <text class="tag" x="500" y="24">DATA LAYER</text>
-        <text class="tag" x="790" y="24">PROCESSING · GIT</text>
+        <!-- ============ band containers ============ -->
+        <rect x="168" y="40"  width="864" height="86"  rx="7" fill="none" stroke="var(--line)" stroke-width="1.2" stroke-dasharray="4 4"/>
+        <rect x="168" y="170" width="864" height="86"  rx="7" fill="none" stroke="var(--line)" stroke-width="1.2" stroke-dasharray="4 4"/>
+        <rect x="168" y="300" width="864" height="94"  rx="7" fill="none" stroke="var(--line)" stroke-width="1.2" stroke-dasharray="4 4"/>
+        <rect x="168" y="438" width="864" height="118" rx="7" fill="none" stroke="var(--line)" stroke-width="1.2" stroke-dasharray="4 4"/>
+        <rect x="168" y="600" width="864" height="94"  rx="7" fill="none" stroke="var(--line)" stroke-width="1.2" stroke-dasharray="4 4"/>
 
-        <!-- agents (green = output) -->
+        <!-- ============ layer names (left gutter) ============ -->
+        <text class="tag" x="16" y="76">CONSUMER</text>
+        <text class="tag" x="16" y="92" style="fill:var(--c-out)">agents</text>
+
+        <text class="tag" x="16" y="206">ENTRY POINTS</text>
+        <text class="tag" x="16" y="222" style="fill:var(--c-ai)">auto-loaded files</text>
+
+        <text class="tag" x="16" y="340">PROCESSING</text>
+        <text class="tag" x="16" y="356" style="fill:var(--c-proc)">scripts</text>
+
+        <text class="tag" x="16" y="486">DATA</text>
+        <text class="tag" x="16" y="502" style="fill:var(--c-data)">.project-memory/</text>
+
+        <text class="tag" x="16" y="646">GIT</text>
+        <text class="tag" x="16" y="662" style="fill:var(--c-guard)">hooks + remote</text>
+
+        <!-- ============ L1 CONSUMER ============ -->
         <g class="node" data-n="claude">
-          <rect x="24" y="58" width="170" height="58" rx="5" fill="var(--c-out-bg)" stroke="var(--c-out)" stroke-width="1.5"/>
-          <text class="lbl" x="38" y="82">Claude Code</text><text class="sub" x="38" y="100">SessionStart hook</text>
+          <rect x="176" y="54" width="272" height="58" rx="5" fill="var(--c-out-bg)" stroke="var(--c-out)" stroke-width="1.5"/>
+          <text class="lbl" x="192" y="78">Claude Code</text>
+          <text class="sub" x="192" y="96">主控 · 拆解 · 整合</text>
         </g>
         <g class="node" data-n="codex">
-          <rect x="24" y="188" width="170" height="58" rx="5" fill="var(--c-out-bg)" stroke="var(--c-out)" stroke-width="1.5"/>
-          <text class="lbl" x="38" y="212">Codex</text><text class="sub" x="38" y="230">AGENTS.md</text>
+          <rect x="464" y="54" width="272" height="58" rx="5" fill="var(--c-out-bg)" stroke="var(--c-out)" stroke-width="1.5"/>
+          <text class="lbl" x="480" y="78">Codex</text>
+          <text class="sub" x="480" y="96">實作 · 測試 · 第二意見</text>
         </g>
         <g class="node" data-n="anti">
-          <rect x="24" y="318" width="170" height="58" rx="5" fill="var(--c-out-bg)" stroke="var(--c-out)" stroke-width="1.5"/>
-          <text class="lbl" x="38" y="342">Antigravity</text><text class="sub" x="38" y="360">.agents/rules/ + AGENTS.md</text>
+          <rect x="752" y="54" width="272" height="58" rx="5" fill="var(--c-out-bg)" stroke="var(--c-out)" stroke-width="1.5"/>
+          <text class="lbl" x="768" y="78">Antigravity</text>
+          <text class="sub" x="768" y="96">大量生成 · 重構</text>
         </g>
 
-        <!-- entry (purple = AI-facing service) -->
-        <g class="node" data-n="status">
-          <rect x="250" y="58" width="186" height="58" rx="5" fill="var(--c-ai-bg)" stroke="var(--c-ai)" stroke-width="1.5"/>
-          <text class="lbl" x="264" y="82" style="fill:var(--c-ai)">status.sh</text><text class="sub" x="264" y="100">runs → output injected</text>
+        <!-- ============ L2 ENTRY POINTS ============ -->
+        <g class="node" data-n="claude-md">
+          <rect x="176" y="184" width="272" height="58" rx="5" fill="var(--c-ai-bg)" stroke="var(--c-ai)" stroke-width="1.5"/>
+          <text class="lbl" x="192" y="208" style="fill:var(--c-ai)">CLAUDE.md + SessionStart hook</text>
+          <text class="sub" x="192" y="226">唯一能「自動執行指令」的進入點</text>
         </g>
         <g class="node" data-n="agents-md">
-          <rect x="250" y="188" width="186" height="58" rx="5" fill="var(--c-ai-bg)" stroke="var(--c-ai)" stroke-width="1.5"/>
-          <text class="lbl" x="264" y="212" style="fill:var(--c-ai)">AGENTS.md</text><text class="sub" x="264" y="230">AUTO-MEMORY block</text>
+          <rect x="464" y="184" width="272" height="58" rx="5" fill="var(--c-ai-bg)" stroke="var(--c-ai)" stroke-width="1.5"/>
+          <text class="lbl" x="480" y="208" style="fill:var(--c-ai)">AGENTS.md</text>
+          <text class="sub" x="480" y="226">含 AUTO-MEMORY 生成區塊</text>
         </g>
         <g class="node" data-n="rules">
-          <rect x="250" y="318" width="186" height="58" rx="5" fill="var(--c-ai-bg)" stroke="var(--c-ai)" stroke-width="1.5"/>
-          <text class="lbl" x="264" y="342" style="fill:var(--c-ai)">.agents/rules/</text><text class="sub" x="264" y="360">AUTO-MEMORY block</text>
+          <rect x="752" y="184" width="272" height="58" rx="5" fill="var(--c-ai-bg)" stroke="var(--c-ai)" stroke-width="1.5"/>
+          <text class="lbl" x="768" y="208" style="fill:var(--c-ai)">.agents/rules/</text>
+          <text class="sub" x="768" y="226">含 AUTO-MEMORY 生成區塊</text>
         </g>
 
-        <!-- data layer (blue) -->
-        <rect x="490" y="40" width="240" height="392" rx="8" fill="none" stroke="var(--line)" stroke-width="1.3" stroke-dasharray="4 4"/>
-        <g class="node" data-n="tier1">
-          <rect x="510" y="70" width="200" height="92" rx="5" fill="var(--c-data)"/>
-          <text class="sub-w" x="524" y="90" style="letter-spacing:.1em">TIER 1 · ALWAYS LOADED</text>
-          <text class="lbl-w" x="524" y="114" style="font-size:12px">INDEX.md</text>
-          <text class="sub-w" x="616" y="114">routing only</text>
-          <text class="lbl-w" x="524" y="140" style="font-size:12px">handoff.md</text>
-          <text class="sub-w" x="616" y="140">the baton</text>
+        <!-- ============ L3 PROCESSING ============ -->
+        <g class="node" data-n="status">
+          <rect x="176" y="314" width="272" height="66" rx="5" fill="var(--c-proc-bg)" stroke="var(--c-proc)" stroke-width="1.5"/>
+          <text class="lbl" x="192" y="338" style="fill:var(--c-proc)">status.sh</text>
+          <text class="sub" x="192" y="356">印出 tier-1 ＋ 遠端落後檢查</text>
+          <text class="sub" x="192" y="372">三個 agent 共用同一支</text>
         </g>
-        <g class="node" data-n="tier2">
-          <rect x="510" y="190" width="200" height="118" rx="5" fill="var(--c-data-bg)" stroke="var(--c-data)" stroke-width="1.5" stroke-dasharray="5 4"/>
-          <text class="tag" x="524" y="210" style="fill:var(--c-data)">TIER 2 · ON DEMAND</text>
-          <text class="sub" x="524" y="234" style="font-size:11.5px">STATE.md</text>
-          <text class="sub" x="524" y="258" style="font-size:11.5px">DECISIONS.md</text>
-          <text class="sub" x="524" y="282" style="font-size:11.5px">PROTOCOL.md</text>
-        </g>
-        <g class="node" data-n="archive">
-          <rect x="510" y="336" width="200" height="44" rx="5" fill="none" stroke="var(--line-strong)" stroke-width="1.2" stroke-dasharray="3 3"/>
-          <text class="sub" x="524" y="356" style="font-size:11.5px">archive/</text>
-          <text class="sub" x="596" y="356">never auto-loaded</text>
-        </g>
-
-        <!-- git layer -->
-        <g class="node" data-n="precommit">
-          <rect x="790" y="58" width="220" height="82" rx="5" fill="var(--c-guard-bg)" stroke="var(--c-guard)" stroke-width="1.6"/>
-          <text class="lbl" x="804" y="82" style="fill:var(--c-guard)">pre-commit</text>
-          <text class="sub" x="804" y="102">blocks: code changed,</text>
-          <text class="sub" x="804" y="120">memory not staged · secrets</text>
+        <g class="node" data-n="sync">
+          <rect x="464" y="314" width="272" height="66" rx="5" fill="var(--c-proc-bg)" stroke="var(--c-proc)" stroke-width="1.5"/>
+          <text class="lbl" x="480" y="338" style="fill:var(--c-proc)">sync-entry-files.sh</text>
+          <text class="sub" x="480" y="356">把 handoff 生成進 entry 檔</text>
+          <text class="sub" x="480" y="372">補上 Codex/Antigravity 的自動化</text>
         </g>
         <g class="node" data-n="commit">
-          <rect x="790" y="188" width="220" height="82" rx="5" fill="var(--c-proc-bg)" stroke="var(--c-proc)" stroke-width="1.6"/>
-          <text class="lbl" x="804" y="212" style="fill:var(--c-proc)">commit-handoff.sh</text>
-          <text class="sub" x="804" y="232">agent commits memory itself</text>
-          <text class="sub" x="804" y="250">pathspec-limited · never your code</text>
+          <rect x="752" y="314" width="272" height="66" rx="5" fill="var(--c-proc-bg)" stroke="var(--c-proc)" stroke-width="1.5"/>
+          <text class="lbl" x="768" y="338" style="fill:var(--c-proc)">commit-handoff.sh</text>
+          <text class="sub" x="768" y="356">agent 自行提交記憶</text>
+          <text class="sub" x="768" y="372">pathspec 限定 · 不碰你的碼</text>
         </g>
+
+        <!-- ============ L4 DATA ============ -->
+        <g class="node" data-n="tier1">
+          <rect x="176" y="454" width="272" height="88" rx="5" fill="var(--c-data)"/>
+          <text class="sub-w" x="192" y="476" style="letter-spacing:.1em">TIER 1 · 每次載入</text>
+          <text class="lbl-w" x="192" y="500" style="font-size:12.5px">INDEX.md</text>
+          <text class="sub-w" x="290" y="500">純索引，無可變狀態</text>
+          <text class="lbl-w" x="192" y="524" style="font-size:12.5px">handoff.md</text>
+          <text class="sub-w" x="290" y="524">唯一的狀態寫入處</text>
+        </g>
+        <g class="node" data-n="tier2">
+          <rect x="464" y="454" width="272" height="88" rx="5" fill="var(--c-data-bg)" stroke="var(--c-data)" stroke-width="1.5" stroke-dasharray="5 4"/>
+          <text class="tag" x="480" y="476" style="fill:var(--c-data)">TIER 2 · 按需載入</text>
+          <text class="sub" x="480" y="500" style="font-size:11.5px">STATE.md · DECISIONS.md</text>
+          <text class="sub" x="480" y="522" style="font-size:11.5px">PROTOCOL.md</text>
+        </g>
+        <g class="node" data-n="archive">
+          <rect x="752" y="454" width="272" height="88" rx="5" fill="none" stroke="var(--line-strong)" stroke-width="1.2" stroke-dasharray="3 3"/>
+          <text class="tag" x="768" y="476">封存</text>
+          <text class="sub" x="768" y="500" style="font-size:11.5px">archive/ · SESSION_LOG.md</text>
+          <text class="sub" x="768" y="522">永不自動載入</text>
+        </g>
+
+        <!-- ============ L5 GIT ============ -->
         <g class="node" data-n="remote">
-          <rect x="790" y="318" width="220" height="82" rx="5" fill="var(--surface-2)" stroke="var(--line-strong)" stroke-width="1.4"/>
-          <text class="lbl" x="804" y="342">Remote</text>
-          <text class="sub" x="804" y="362">GitHub · NAS · cloud bare repo</text>
-          <text class="sub" x="804" y="380">optional — local-only works</text>
+          <rect x="176" y="614" width="272" height="66" rx="5" fill="var(--surface-2)" stroke="var(--line-strong)" stroke-width="1.4"/>
+          <text class="lbl" x="192" y="638">Remote</text>
+          <text class="sub" x="192" y="656">GitHub · NAS · 雲端 bare repo</text>
+          <text class="sub" x="192" y="672">選用 —— 單機不需要</text>
         </g>
-        <g class="node" data-n="machineB">
-          <rect x="790" y="448" width="220" height="66" rx="5" fill="none" stroke="var(--line-strong)" stroke-width="1.2" stroke-dasharray="4 3"/>
-          <text class="lbl" x="804" y="472">Another machine</text>
-          <text class="sub" x="804" y="492">post-merge → regenerates</text>
+        <g class="node" data-n="postmerge">
+          <rect x="464" y="614" width="272" height="66" rx="5" fill="var(--c-guard-bg)" stroke="var(--c-guard)" stroke-width="1.5"/>
+          <text class="lbl" x="480" y="638" style="fill:var(--c-guard)">post-merge</text>
+          <text class="sub" x="480" y="656">pull 後刷新 entry 檔</text>
+        </g>
+        <g class="node" data-n="precommit">
+          <rect x="752" y="614" width="272" height="66" rx="5" fill="var(--c-guard-bg)" stroke="var(--c-guard)" stroke-width="1.5"/>
+          <text class="lbl" x="768" y="638" style="fill:var(--c-guard)">pre-commit</text>
+          <text class="sub" x="768" y="656">改碼未更新記憶 → 擋</text>
+          <text class="sub" x="768" y="672">新增 secret → 擋</text>
         </g>
 
-        <!-- startup edges -->
-        <path id="e-s1" class="flowedge" d="M510,114 L440,86" marker-end="url(#a3)" color="var(--c-proc)"/>
-        <path id="e-s2" class="flowedge" d="M510,124 L440,216" marker-end="url(#a3)" color="var(--c-proc)"/>
-        <path id="e-s3" class="flowedge" d="M510,140 L440,346" marker-end="url(#a3)" color="var(--c-proc)"/>
-        <path id="e-s4" class="flowedge" d="M250,86 L198,86" marker-end="url(#a3)" color="var(--c-proc)"/>
-        <path id="e-s5" class="flowedge" d="M250,216 L198,216" marker-end="url(#a3)" color="var(--c-proc)"/>
-        <path id="e-s6" class="flowedge" d="M250,346 L198,346" marker-end="url(#a3)" color="var(--c-proc)"/>
-        <!-- completion edges -->
-        <path id="e-c1" class="flowedge" d="M194,116 C330,170 380,152 510,152" marker-end="url(#a3)" color="var(--c-proc)"/>
-        <path id="e-c2" class="flowedge" d="M710,118 L786,98" marker-end="url(#a3)" color="var(--c-proc)"/>
-        <path id="e-c3" class="flowedge" d="M900,140 L900,184" marker-end="url(#a3)" color="var(--c-proc)"/>
-        <path id="e-c4" class="flowedge" d="M790,228 C742,228 748,300 748,336 L714,352" marker-end="url(#a3)" color="var(--c-proc)"/>
-        <!-- sync edges -->
-        <path id="e-y1" class="flowedge" d="M900,270 L900,314" marker-end="url(#a3)" color="var(--c-proc)"/>
-        <path id="e-y2" class="flowedge" d="M900,400 L900,444" marker-end="url(#a3)" color="var(--c-proc)"/>
-        <path id="e-y3" class="flowedge" d="M790,481 C650,481 620,470 620,436" marker-end="url(#a3)" color="var(--c-proc)"/>
+        <!-- ============ STARTUP edges (upward, offset -14) ============ -->
+        <path id="e-s1" class="flowedge" d="M298,450 L298,386" marker-end="url(#a3)" color="var(--c-proc)"/>
+        <path id="e-s2" class="flowedge" d="M298,310 L298,248" marker-end="url(#a3)" color="var(--c-proc)"/>
+        <path id="e-s3" class="flowedge" d="M298,180 L298,118" marker-end="url(#a3)" color="var(--c-proc)"/>
+        <path id="e-s4" class="flowedge" d="M586,180 L586,118" marker-end="url(#a3)" color="var(--c-proc)"/>
+        <path id="e-s5" class="flowedge" d="M874,180 L874,118" marker-end="url(#a3)" color="var(--c-proc)"/>
 
-        <text class="elbl f-startup" x="452" y="62">inject</text>
-        <text class="elbl f-startup" x="452" y="192">read</text>
-        <text class="elbl f-startup" x="452" y="322">read</text>
-        <text class="elbl f-complete" x="300" y="176">writes handoff</text>
-        <text class="elbl f-complete" x="730" y="92">stages</text>
-        <text class="elbl f-complete" x="906" y="168">passes</text>
-        <text class="elbl f-complete" x="620" y="312">regenerates entry blocks</text>
-        <text class="elbl f-sync" x="906" y="298">push (opt-in)</text>
-        <text class="elbl f-sync" x="906" y="430">pull · ff-only</text>
-        <text class="elbl f-sync" x="628" y="464">refreshes memory</text>
+        <!-- ============ COMPLETION edges ============ -->
+        <!-- agent writes handoff: deliberately bypasses the read path, routed on the left -->
+        <path id="e-c1" class="flowedge" d="M296,118 C196,150 150,210 150,380 C150,470 150,498 170,498" marker-end="url(#a3)" color="var(--c-proc)"/>
+        <path id="e-c2" class="flowedge" d="M360,450 C440,432 600,414 600,386" marker-end="url(#a3)" color="var(--c-proc)"/>
+        <path id="e-c3" class="flowedge" d="M614,310 L614,248" marker-end="url(#a3)" color="var(--c-proc)"/>
+        <path id="e-c4" class="flowedge" d="M700,312 C790,300 874,286 874,248" marker-end="url(#a3)" color="var(--c-proc)"/>
+        <path id="e-c5" class="flowedge" d="M424,450 C620,436 888,414 888,386" marker-end="url(#a3)" color="var(--c-proc)"/>
+        <path id="e-c6" class="flowedge" d="M1030,352 C1074,392 1074,570 1030,644" marker-end="url(#a3)" color="var(--c-proc)"/>
+
+        <!-- ============ SYNC edges ============ -->
+        <path id="e-y1" class="flowedge" d="M748,660 L456,660" marker-end="url(#a3)" color="var(--c-proc)"/>
+        <path id="e-y2" class="flowedge" d="M312,610 L312,550" marker-end="url(#a3)" color="var(--c-proc)"/>
+        <path id="e-y3" class="flowedge" d="M600,610 L600,550" marker-end="url(#a3)" color="var(--c-proc)"/>
+
+        <!-- ============ edge labels ============ -->
+        <text class="elbl f-startup" x="196" y="424">讀 tier-1</text>
+        <text class="elbl f-startup" x="196" y="284">注入 context</text>
+        <text class="elbl f-startup" x="196" y="156">開局自動</text>
+        <text class="elbl f-startup" x="484" y="156">自動載入</text>
+        <text class="elbl f-startup" x="772" y="156">自動載入</text>
+        <text class="elbl f-complete" x="60"  y="300">寫 handoff</text>
+        <text class="elbl f-complete" x="404" y="424">讀 handoff</text>
+        <text class="elbl f-complete" x="500" y="284">生成區塊</text>
+        <text class="elbl f-complete" x="742" y="290">生成區塊</text>
+        <text class="elbl f-complete" x="600" y="440">提交記憶</text>
+        <text class="elbl f-complete" x="1044" y="500">通過檢查</text>
+        <text class="elbl f-sync" x="536" y="678">push（選用）</text>
+        <text class="elbl f-sync" x="196" y="590">pull · ff-only</text>
+        <text class="elbl f-sync" x="484" y="590">刷新 entry 檔</text>
       </svg>
     </div>
-    <figcaption id="mapcap">Stage 1 — tier-1 記憶在 agent 動作前就已到位。Claude Code 由 <code>SessionStart</code> hook 注入；Codex 與 Antigravity 從它們本來就自動載入的檔案讀取。</figcaption>
+    <figcaption id="mapcap">Stage 1 — 由下往上：<code>status.sh</code> 讀 tier-1 後注入 Claude Code；Codex 與 Antigravity 直接從各自的 entry 檔讀取（區塊在上次收工時就已生成）。</figcaption>
   </figure>
 
-  <div class="note" id="mapnote"><b>為什麼是兩條路徑？</b> 三個 agent 都會自動載入<span class="mono">靜態檔案</span>，但只有 Claude Code 能自動<em>執行指令</em>並注入輸出。所以 Codex 與 Antigravity 改由 git hook 把 handoff <em>生成進</em>它們本來就會讀的檔案 —— 同一個事實來源，兩種送達方式。</div>
+  <div class="note" id="mapnote"><b>為什麼 col 2、3 在開局時沒有連到資料層？</b> 因為那時不需要 —— handoff 早在上一次收工由 <span class="mono">sync-entry-files.sh</span> 生成進它們的 entry 檔了。Claude Code 走「執行腳本」路徑，另外兩者走「靜態檔案」路徑，這正是本設計的核心取捨。</div>
 </section>
 
 <!-- ===================== 5. FEATURES ===================== -->
@@ -534,19 +580,25 @@ git config core.hooksPath .githooks         <span class="cm"># 每個 clone 都�
   var map=document.getElementById('map'),cap=document.getElementById('mapcap'),
       note=document.getElementById('mapnote'),btns=document.querySelectorAll('.controls button');
   var caps={
-    startup:'Stage 1 — tier-1 記憶在 agent 動作前就已到位。Claude Code 由 <code>SessionStart</code> hook 注入；Codex 與 Antigravity 從它們本來就自動載入的檔案讀取。',
-    complete:'Stage 3 — agent 改寫 <code>handoff.md</code> 後自行 commit。<code>pre-commit</code> 會在「改了工程檔卻沒更新記憶」時擋下、掃描新增行的 secret，並再生 entry 檔中的 AUTO-MEMORY 區塊。',
-    sync:'Stage 4 — <code>MEM_AUTOPUSH=1</code> 時記憶 commit 會被推送；另一台開局時 fast-forward，<code>post-merge</code> 刷新其 entry 檔。完全沒有 remote 也可以，只是少了這一段。'
+    startup:'Stage 1 — 由下往上：<code>status.sh</code> 讀 tier-1 後注入 Claude Code；Codex 與 Antigravity 直接從各自的 entry 檔讀取（區塊在上次收工時就已生成）。',
+    complete:'Stage 3 — agent 直接改寫 <code>handoff.md</code>（左側繞道，刻意跳過讀取路徑）；<code>sync-entry-files.sh</code> 據此再生兩個 entry 檔的 AUTO-MEMORY 區塊；<code>commit-handoff.sh</code> 提交記憶，經 <code>pre-commit</code> 把關。',
+    sync:'Stage 4 — <code>MEM_AUTOPUSH=1</code> 時記憶 commit 被推到 remote；另一台 <code>pull --ff-only</code> 取回，<code>post-merge</code> 刷新其 entry 檔。完全沒有 remote 也可以，只是少了這一層。'
   };
   var notes={
-    startup:'<b>為什麼是兩條路徑？</b> 三個 agent 都會自動載入<span class="mono">靜態檔案</span>，但只有 Claude Code 能自動<em>執行指令</em>並注入輸出。所以 Codex 與 Antigravity 改由 git hook 把 handoff <em>生成進</em>它們本來就會讀的檔案 —— 同一個事實來源，兩種送達方式。',
-    complete:'<b>門檻很重要。</b> 唯讀提問、瑣碎解釋、無變更 review <em>完全不寫檔</em>。記憶自動 commit 是因為它本地且可逆；<span class="mono">你的</span>原始碼永遠不會被自動提交。',
+    startup:'<b>為什麼 col 2、3 在開局時沒有連到資料層？</b> 因為那時不需要 —— handoff 早在上一次收工由 <span class="mono">sync-entry-files.sh</span> 生成進它們的 entry 檔了。Claude Code 走「執行腳本」路徑，另外兩者走「靜態檔案」路徑，這正是本設計的核心取捨。',
+    complete:'<b>門檻很重要。</b> 唯讀提問、瑣碎解釋、無變更 review <em>完全不寫檔</em>。記憶自動 commit 是因為它本地且可逆；<span class="mono">你的</span>原始碼永遠不會被自動提交（commit 受 pathspec 限定）。',
     sync:'<b>只做 fast-forward。</b> 自動同步用 <span class="mono">git pull --ff-only</span> 並受三重守衛保護 —— 開關開啟、工作樹乾淨、本地無分岔。要嘛乾淨快轉，要嘛中止且什麼都不動；<span class="mono">rebase</span>、<span class="mono">merge</span>、<span class="mono">reset</span> 與 force-push 永不自動執行。'
   };
-  var edges={startup:['e-s1','e-s2','e-s3','e-s4','e-s5','e-s6'],complete:['e-c1','e-c2','e-c3','e-c4'],sync:['e-y1','e-y2','e-y3']};
-  var lit={startup:['tier1','status','agents-md','rules','claude','codex','anti'],
-           complete:['claude','codex','anti','tier1','precommit','commit','agents-md','rules'],
-           sync:['commit','remote','machineB','tier1']};
+  var edges={
+    startup:['e-s1','e-s2','e-s3','e-s4','e-s5'],
+    complete:['e-c1','e-c2','e-c3','e-c4','e-c5','e-c6'],
+    sync:['e-y1','e-y2','e-y3','e-c3','e-c4']
+  };
+  var lit={
+    startup:['tier1','status','claude-md','agents-md','rules','claude','codex','anti'],
+    complete:['claude','tier1','sync','commit','agents-md','rules','precommit'],
+    sync:['remote','postmerge','precommit','tier1','sync','agents-md','rules']
+  };
   function setFlow(n){
     map.setAttribute('data-flow',n);
     map.querySelectorAll('.flowedge').forEach(function(p){p.classList.remove('on');});
