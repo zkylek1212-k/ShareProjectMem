@@ -103,6 +103,17 @@ Windows PowerShell：
 
 **前置條件**：git、bash（Windows 用 Git Bash）、目標資料夾已 `git init`。
 
+### Codex plugin
+
+安裝本 repo 的 marketplace 和 plugin：
+
+```bash
+codex plugin marketplace add zkylek1212-k/ShareProjectMem
+codex plugin add shared-project-memory@shared-project-memory
+```
+
+接著在要初始化的專案中明確呼叫 `$shared-project-memory`。plugin 不會自動初始化專案，也不提供 MCP server；skill 會先檢查 Git repo 和既有記憶檔，再呼叫現有的專案初始化器。
+
 ---
 
 ## 安裝後產生什麼

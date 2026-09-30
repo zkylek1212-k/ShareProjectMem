@@ -110,6 +110,19 @@ Both paths run the same `scripts/init-memory.sh`, produce identical results, and
 
 **Prerequisites**: git, bash (Git Bash on Windows), and a target folder that is already a git repo.
 
+### Codex plugin
+
+Install the repository marketplace and plugin:
+
+```bash
+codex plugin marketplace add zkylek1212-k/ShareProjectMem
+codex plugin add shared-project-memory@shared-project-memory
+```
+
+Then explicitly invoke `$shared-project-memory` from the project you want to initialize. The
+plugin does not initialize projects automatically and does not add an MCP server; the skill runs
+the existing project-scoped installer after checking the Git repository and existing memory files.
+
 ---
 
 ## What gets created
