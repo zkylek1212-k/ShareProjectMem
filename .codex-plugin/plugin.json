@@ -1,6 +1,6 @@
 {
   "name": "shared-project-memory",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Explicitly initialize shared project memory in a Git repository.",
   "author": {
     "name": "zkylek1212-k",
