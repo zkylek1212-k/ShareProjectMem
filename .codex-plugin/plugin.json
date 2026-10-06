@@ -1,6 +1,6 @@
 {
   "name": "shared-project-memory",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Explicitly initialize shared project memory in a Git repository.",
   "author": {
     "name": "zkylek1212-k",
@@ -10,6 +10,7 @@
   "repository": "https://github.com/zkylek1212-k/ShareProjectMem",
   "license": "MIT",
   "skills": "./skills/",
+  "hooks": "./hooks/codex-hooks.json",
   "interface": {
     "displayName": "Shared Project Memory",
     "shortDescription": "Initialize shared project memory on explicit request.",
