@@ -23,7 +23,7 @@ Push-Location $Target
 try {
     $env:CLAUDE_PLUGIN_ROOT = ($Here -replace '\\', '/')
     $script = "$($env:CLAUDE_PLUGIN_ROOT)/scripts/init-memory.sh"
-    & $bash $script
+    & $bash -l $script
     if ($LASTEXITCODE -ne 0) { throw "init-memory.sh failed with exit code $LASTEXITCODE" }
 }
 finally {
