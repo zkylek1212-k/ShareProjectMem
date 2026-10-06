@@ -4,7 +4,14 @@ description: Scaffold shared project memory into this repo (.project-memory/, en
 
 Set up cross-tool shared project memory in the current repository.
 
-1. Run the scaffolding script:
+1. Run the scaffolding script. On Windows, use the bundled PowerShell installer so `bash`
+   cannot resolve to WSL:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "${CLAUDE_PLUGIN_ROOT}/install.ps1" "${PWD}"
+```
+
+On macOS/Linux, run:
 
 ```bash
 bash "${CLAUDE_PLUGIN_ROOT}/scripts/init-memory.sh"
