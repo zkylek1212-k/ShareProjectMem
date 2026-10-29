@@ -1,5 +1,11 @@
 # ShareProjectMem
 
+> **Archived — moved into Agent Workbench.** This plugin is now maintained at
+> [`plugins/shared-project-memory`](https://github.com/zkylek1212-k/Mulit-Harness-ADE/tree/master/plugins/shared-project-memory) in the Agent Workbench repository.
+> Agent Workbench installs and updates it for Claude Code and Codex (it asks when Settings opens) and
+> replaces installs from this repository. Existing installs from here keep working at v1.1.0 but get no updates.
+
+
 **Cross-tool shared project memory for Claude Code, Codex and Antigravity.**
 
 One project memory that all three agents load automatically — so switching machines or

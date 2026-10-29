@@ -1,5 +1,11 @@
 # ShareProjectMem（繁體中文）
 
+> **已封存，改由 Agent Workbench 維護。** 這個 plugin 現在放在 Agent Workbench repo 的
+> [`plugins/shared-project-memory`](https://github.com/zkylek1212-k/Mulit-Harness-ADE/tree/master/plugins/shared-project-memory)。
+> Agent Workbench 會幫 Claude Code 與 Codex 安裝、更新（開啟設定時詢問），並取代從這個 repo 裝的版本。
+> 已從這裡安裝的版本仍可使用（停在 v1.1.0），但不會再更新。
+
+
 跨工具共享專案記憶。讓 **Claude Code / Codex / Antigravity** 在換電腦、換 agent 時讀同一份
 記憶，不必重新解釋專案或重掃程式碼。
 
