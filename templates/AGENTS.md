@@ -29,9 +29,9 @@ Then save the memory — use the Handoff format in `PROTOCOL.md` (under 8000 byt
 bash .project-memory/commit-handoff.sh "docs(memory): <one-line summary>"
 ```
 
-It saves according to Agent Workbench: Settings > Memory sync (off: this machine only; OneDrive /
-Google Drive folder; or a commit + push to the private memory repository). Tell the user what it
-printed.
+It saves according to where `.project-memory` points (set with the plugin's `memory-sync.sh link`):
+a plain folder stays on this machine; a OneDrive / Google Drive folder is uploaded by the cloud
+client; a private memory repository gets a commit + push. Tell the user what it printed.
 
 ## Never
 

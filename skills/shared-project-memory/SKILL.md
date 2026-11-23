@@ -15,3 +15,4 @@ Use this skill only after the user explicitly invokes `$shared-project-memory` o
    `<plugin-root>/install.sh <target-repository>`.
 4. Report created files and the per-clone hook activation command: `git config core.hooksPath .githooks`. Do not commit or push unless asked.
 5. Do not invent project status. Populate `STATE.md` and `handoff.md` only from verifiable project files and history, following `.project-memory/PROTOCOL.md`.
+6. To share memory between computers (only when the user asks), run `bash <plugin-root>/scripts/memory-sync.sh link <store>` in the project, where `<store>` is a OneDrive / Google Drive folder or the user's private GitHub repository (`owner/repo`). The store is remembered per machine, so later projects need only `memory-sync.sh link`. It refuses a public repository and never touches the project repository.

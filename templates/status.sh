@@ -12,12 +12,13 @@
 MEM="$(cd "$(dirname "$0")" && pwd)"
 [ -f "$MEM/handoff.md" ] || exit 0   # not a memory-enabled repo -> do nothing
 
-# Safe auto-sync switch: 0 = report only (default), 1 = allow fast-forward sync.
-AUTOSYNC="${MEM_AUTOSYNC:-0}"
+# Safe auto-sync switch for the private MEMORY repository (never the project): 1 = fast-forward
+# when safe (default), 0 = report only.
+AUTOSYNC="${MEM_AUTOSYNC:-1}"
 
 SYNC_NOTE=""
 # Remote check only when the memory is linked to a private GitHub memory repository
-# (Workbench: Settings > Memory sync). Memory sync off (a plain folder in the project) or a
+# (set up with the plugin's memory-sync.sh). Memory sync off (a plain folder in the project) or a
 # cloud-drive folder: no network access at all.
 g() { git -C "$MEM" "$@"; }
 MEMREAL="$(cd "$MEM" && pwd -P)"
@@ -40,7 +41,7 @@ if [ "$LINKED_REPO" = "1" ] && g rev-parse --abbrev-ref '@{u}' >/dev/null 2>&1; 
       if g pull --ff-only --quiet 2>/dev/null; then
         SYNC_NOTE="> Auto-synced: fast-forwarded $behind commit(s). Memory below is fresh."
       else
-        SYNC_NOTE="> Auto-sync aborted (not a fast-forward). Memory below may be stale - ask the user before merging."
+        SYNC_NOTE="> Auto-sync aborted (not a fast-forward). Memory below may be stale - tell the user to run memory-sync.sh sync."
       fi
     else
       SYNC_NOTE="> Behind remote by $behind commit(s) (ahead=$ahead, uncommitted=$([ -n "$dirty" ] && echo yes || echo no)). Do NOT auto-pull; report this and ask the user."

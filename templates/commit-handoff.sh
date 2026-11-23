@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Save the handoff so it reaches other agents (and, with memory sync on, other machines).
 #
-# Three cases, decided by where .project-memory/ really points (Workbench: Settings > Memory sync):
-#   1. Memory sync OFF: .project-memory is a plain folder in the project. The handoff stays on this
+# Three cases, decided by where .project-memory/ really points (set with the plugin's memory-sync.sh link):
+#   1. Not linked: .project-memory is a plain folder in the project. The handoff stays on this
 #      machine. Nothing is committed and there is NO network access - and there is nothing else to
 #      do: do not commit memory any other way and do not retry.
 #   2. Cloud folder (OneDrive / Google Drive): .project-memory links into the chosen folder (it has
@@ -29,7 +29,7 @@ PROJREAL="$(real "$REPO")"
 # 1) not linked: memory sync is off
 case "$MEMREAL/" in
   "$PROJREAL"/*)
-    echo "Memory sync is off: the handoff is saved on this machine only. Nothing else to do."
+    echo "Not linked: the handoff is saved on this machine only. To share it between computers, run the plugin's memory-sync.sh link."
     exit 0
     ;;
 esac
@@ -57,7 +57,7 @@ done
 MEMTOP="$(git -C "$MEM" rev-parse --show-toplevel 2>/dev/null || true)"
 if [ -z "$MEMTOP" ]; then
   echo "The memory folder is linked but is neither a synced folder nor a git repository; nothing was committed."
-  echo "Check Agent Workbench: Settings > Memory sync."
+  echo "Check it with the plugin: memory-sync.sh status."
   exit 1
 fi
 TOPREAL="$(real "$MEMTOP")"
@@ -89,7 +89,7 @@ if [ "${MEM_AUTOPUSH:-1}" = "1" ]; then
     echo "Pushed (after rebasing onto the other machine's memory)."
   else
     echo "Push failed (offline, or a conflict with another machine). The commit is kept locally;"
-    echo "use Settings > Memory sync > Sync now, or resolve in: $MEMTOP"
+    echo "run the plugin's memory-sync.sh sync, or resolve in: $MEMTOP"
   fi
 else
   echo "Not pushed (MEM_AUTOPUSH=0)."

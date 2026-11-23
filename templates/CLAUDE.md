@@ -18,6 +18,6 @@ Before substantial work:
 Before finishing, apply the memory-update criteria in `PROTOCOL.md` — update `handoff.md` when the
 work meets the threshold (or run `/handoff`), and skip it for read-only or trivial sessions.
 Never commit `.project-memory/`, `AGENTS.md` or `.agents/` to this repository; memory is shared
-only through Agent Workbench memory sync.
+only through the plugin's `memory-sync.sh` (a cloud folder or a private memory repository).
 
 Do NOT auto pull/rebase/merge/reset/push without user authorization. `git fetch` is fine.

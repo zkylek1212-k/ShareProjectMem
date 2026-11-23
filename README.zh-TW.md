@@ -1,16 +1,10 @@
 # ShareProjectMem（繁體中文）
 
-> **已封存，改由 Agent Workbench 維護。** 這個 plugin 現在放在 Agent Workbench repo 的
-> [`plugins/shared-project-memory`](https://github.com/zkylek1212-k/Mulit-Harness-ADE/tree/master/plugins/shared-project-memory)。
-> Agent Workbench 會幫 Claude Code 與 Codex 安裝、更新（開啟設定時詢問），並取代從這個 repo 裝的版本。
-> 已從這裡安裝的版本仍可使用（停在 v1.1.0），但不會再更新。
-
-
 跨工具共享專案記憶。讓 **Claude Code / Codex / Antigravity** 在換電腦、換 agent 時讀同一份
 記憶，不必重新解釋專案或重掃程式碼。
 
 記憶**絕不提交進專案 repo**：每個 clone 各自在本機，跨電腦共用交給
-[Agent Workbench 記憶同步](#存放位置agent-workbench-記憶同步)（私人 GitHub repo，或你指定的 OneDrive／Google Drive 資料夾）。
+plugin 內建的[記憶同步](#存放位置記憶同步)（私人 GitHub repo，或你指定的 OneDrive／Google Drive 資料夾）。
 
 *[English version →](README.md)*
 
@@ -55,7 +49,7 @@
    自動執行 → 注入              自動載入        自動載入
                                     ▲                ▲
                                     └── 自動再生 ───────────┘
-                              commit-handoff.sh（每次交接）與 Agent Workbench（開啟專案時）
+                              commit-handoff.sh（每次交接）與 memory-sync.sh（link／sync）
 ```
 
 entry 檔裡的 `AUTO-MEMORY` 區塊是**機器衍生**的，標有 do-not-edit，不會 drift。
@@ -71,7 +65,7 @@ entry 檔裡的 `AUTO-MEMORY` 區塊是**機器衍生**的，標有 do-not-edit�
 | 收工寫交接棒 | `/handoff` | `$handoff` | `/handoff` | plugin 的 skill；沒裝 plugin 時照 entry 檔指示 |
 | **擋記憶進專案 repo** | ✅ | ✅ | ✅ | `.git/info/exclude` + git pre-commit（工具無關） |
 | **擋 secret 進記憶 repo** | ✅ | ✅ | ✅ | `commit-handoff.sh` secret 掃描 |
-| 跨機同步 | ✅ | ✅ | ✅ | Agent Workbench 記憶同步 + `commit-handoff.sh` |
+| 跨機同步 | ✅ | ✅ | ✅ | `memory-sync.sh` + `commit-handoff.sh` |
 
 > **誠實的地板**：hook 擋得了「沒更新記憶」，擋不了「更新得敷衍」——
 > 內容品質仍取決於 agent，這是 LLM 的本質限制，沒有工具能繞過。
@@ -80,21 +74,10 @@ entry 檔裡的 `AUTO-MEMORY` 區塊是**機器衍生**的，標有 do-not-edit�
 
 ## 安裝
 
-### 搭配 Agent Workbench（建議）
-
-Agent Workbench 內附這個 plugin（原始碼在 Workbench repo 的 `plugins/shared-project-memory`）。
-開啟設定時，Workbench 會詢問是否幫每個已啟用的 Claude Code／Codex（從本機 marketplace
-`agent-workbench`）與 Antigravity（`agy plugin install`）安裝，並取代從 GitHub 裝的版本。之後 plugin
-跟著 Workbench 一起更新。
-
-沒裝 plugin 時，Claude Code 仍會拿到記憶快照：`sync-entry-files.sh` 會寫入
-`.claude/rules/shared-memory.md`（只在這個 clone），裝上 plugin 後就移除，handoff 不會被載入兩次。
-
-### Claude Code（不透過 Agent Workbench）
+### Claude Code
 
 ```bash
-git clone https://github.com/zkylek1212-k/Multi-Harness-ADE.git
-claude plugin marketplace add ./Multi-Harness-ADE/plugins/shared-project-memory
+claude plugin marketplace add zkylek1212-k/ShareProjectMem
 claude plugin install shared-project-memory@shared-project-memory
 ```
 
@@ -107,9 +90,9 @@ claude plugin install shared-project-memory@shared-project-memory
 ### Codex / Antigravity / 純手動（不需要 Claude Code）
 
 ```bash
-git clone https://github.com/zkylek1212-k/Multi-Harness-ADE.git
-bash Multi-Harness-ADE/plugins/shared-project-memory/install.sh            # 裝進目前 repo
-bash Multi-Harness-ADE/plugins/shared-project-memory/install.sh /my/repo   # 裝進指定 repo
+git clone https://github.com/zkylek1212-k/ShareProjectMem.git
+bash ShareProjectMem/install.sh            # 裝進目前 repo
+bash ShareProjectMem/install.sh /my/repo   # 裝進指定 repo
 ```
 
 Windows PowerShell：
@@ -127,7 +110,7 @@ Windows PowerShell：
 把 clone 裡的 plugin 資料夾加成本機 marketplace 再安裝：
 
 ```bash
-codex plugin marketplace add ./Multi-Harness-ADE/plugins/shared-project-memory
+codex plugin marketplace add ./ShareProjectMem
 codex plugin add shared-project-memory@shared-project-memory
 ```
 
@@ -136,7 +119,7 @@ codex plugin add shared-project-memory@shared-project-memory
 ### Antigravity plugin
 
 ```bash
-agy plugin install ./Multi-Harness-ADE/plugins/shared-project-memory
+agy plugin install ./ShareProjectMem
 ```
 
 Antigravity 會執行根目錄的 `hooks.json`（SessionStart → `node scripts/session-start.js --antigravity`，
@@ -179,7 +162,7 @@ Agent 會改寫 handoff（`State`、`Verified`、`Not verified`、`Next`、`Risk
 8000 bytes），再用 `commit-handoff.sh` 存放。不符更新門檻（唯讀提問、瑣碎解釋、無變更 review）時
 **完全不寫檔** —— 省下無謂的 churn。
 
-**換電腦** — 在已設定記憶同步的 Agent Workbench 開啟專案：它會把 `.project-memory/` 連到共用的那份並重產 entry 檔。
+**換電腦** — clone 專案後執行 `/memory-sync link`（或 `bash <plugin>/scripts/memory-sync.sh link`）：它會把 `.project-memory/` 連到共用的那份並重產 entry 檔。
 若專案有提交 `.githooks/`，每個 clone 再跑一次 `git config core.hooksPath .githooks`。
 
 ---
@@ -204,23 +187,30 @@ Agent 會改寫 handoff（`State`、`Verified`、`Not verified`、`Next`、`Risk
 
 ---
 
-## 存放位置：Agent Workbench 記憶同步
+## 存放位置：記憶同步
 
-記憶放哪裡，在每台電腦的 **Agent Workbench：設定 → 記憶同步** 選一次。plugin 的
-`commit-handoff.sh` 照這個設定存放，絕不提交進專案 repo。
+記憶放哪裡，每台電腦用 `scripts/memory-sync.sh` 設定一次（Claude Code：`/memory-sync`），在專案裡執行：
 
-| 設定 | `.project-memory/` 是 | `commit-handoff.sh` |
+```bash
+bash <plugin>/scripts/memory-sync.sh link ~/OneDrive/project-memory   # 雲端同步資料夾
+bash <plugin>/scripts/memory-sync.sh link me/my-private-memory        # 或你的「私人」GitHub repo
+bash <plugin>/scripts/memory-sync.sh link                             # 之後的專案：存放位置已記住
+bash <plugin>/scripts/memory-sync.sh sync                             # git 存放：commit、rebase、push
+bash <plugin>/scripts/memory-sync.sh status
+```
+
+| 存放位置 | `.project-memory/` 是 | `commit-handoff.sh` |
 |---|---|---|
-| 關閉（預設） | clone 裡的一般資料夾 | 只存本機，不連網路 |
-| 你指定的 OneDrive／Google Drive 資料夾 | 指向該資料夾的連結 | 存好即可，由雲端硬碟程式上傳 |
+| 未設定（預設） | clone 裡的一般資料夾 | 只存本機，不連網路 |
+| OneDrive／Google Drive／Dropbox 資料夾 | 指向 `<資料夾>/<owner>/<repo>` 的連結 | 存好即可，由雲端硬碟程式上傳 |
 | 私人 GitHub repo | 指向私人記憶 repo clone 的連結 | 在那裡 commit 並 push（`MEM_AUTOPUSH=0` 不 push） |
 
-一個記憶 repo／資料夾放所有專案，每個專案一個子資料夾。Workbench 開啟專案時自動連結；另一台電腦則連到已經存在的那份。
-
-**沒有 Agent Workbench**：記憶只留在寫入它的那台電腦。**沒有這個 plugin**：Workbench 照樣存放與同步記憶，
-但 Claude Code 開局不會載入、也沒有 `/handoff`；Workbench 的記憶同步設定頁會提示安裝 plugin。
-
-`MEM_AUTOSYNC=1` 讓 `status.sh` 開局時 fast-forward 私人記憶 repo（僅限工作樹乾淨且無分岔；其他情況只回報，永不 merge 或 reset）。
+- 一個存放位置放所有專案，每個專案一個 `<owner>/<repo>` 子資料夾（取自專案的 GitHub origin，否則 `local/<資料夾名>`）。Windows 用 junction（不需系統管理員），其他系統用 symlink。
+- 公開 repo 一律拒絕（不登入查 GitHub API）。repo 不存在且有裝 `gh` 時，會建立為**私人**；clone 放在 `~/.config/shared-project-memory/repos/`。
+- 第一台電腦：把 clone 的記憶搬進存放位置。其他電腦：連到已存在的那份。兩邊都有且內容不同時會停下，要你選 `--prefer local` 或 `--prefer shared`；兩邊都先備份到 `<存放位置>/.local-backups/`。
+- 專案 repo 自己追蹤 `.project-memory/` 時會拒絕，先取消追蹤。
+- `status.sh` 開局時在安全情況下 fast-forward 私人記憶 repo（工作樹乾淨且無分岔；其他情況只回報，永不 merge 或 reset）。`MEM_AUTOSYNC=0` 可關閉。
+- 以前 Agent Workbench 記憶同步建立的存放位置格式相同，照常可用。
 
 ---
 

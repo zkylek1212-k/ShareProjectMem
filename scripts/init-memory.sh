@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Scaffold shared project memory for the current clone.
 # Idempotent: never overwrites an existing file. Memory is NEVER committed to the project
-# repository: it stays local (.git/info/exclude) and is shared through Agent Workbench memory sync.
+# repository: it stays local (.git/info/exclude) and is shared with scripts/memory-sync.sh.
 set -e
 
 ROOT="${CLAUDE_PLUGIN_ROOT:-$(cd "$(dirname "$0")/.." && pwd)}"
@@ -40,7 +40,7 @@ chmod +x .githooks/pre-commit \
          "$MEM/status.sh" "$MEM/sync-entry-files.sh" "$MEM/commit-handoff.sh" 2>/dev/null || true
 
 # Keep memory and the generated entry files out of the project repository (this clone only; the
-# same root-anchored patterns Agent Workbench writes). Files the project already tracks, such as a
+# same root-anchored patterns memory-sync.sh writes). Files the project already tracks, such as a
 # team AGENTS.md, are unaffected and sync-entry-files.sh leaves them alone.
 EXCLUDE="$(git rev-parse --git-path info/exclude)"
 mkdir -p "$(dirname "$EXCLUDE")"
@@ -81,7 +81,7 @@ echo
 echo "Done. Next:"
 echo "  1. Fill in $MEM/STATE.md and $MEM/handoff.md for this project."
 echo "  2. Never commit $MEM, AGENTS.md or .agents to this repository. To share memory between"
-echo "     computers, use Agent Workbench: Settings > Memory sync (private GitHub repo / OneDrive /"
-echo "     Google Drive). Until then the handoff stays on this machine."
+echo "     computers: bash \"$ROOT/scripts/memory-sync.sh\" link <cloud folder | owner/private-repo>"
+echo "     (Claude Code: /memory-sync). Until then the handoff stays on this machine."
 echo "  3. Optional: commit .githooks .gitattributes CLAUDE.md; on every OTHER clone run:"
 echo "     git config core.hooksPath .githooks"

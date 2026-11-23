@@ -31,8 +31,8 @@ bash "${CLAUDE_PLUGIN_ROOT}/scripts/init-memory.sh"
 4. Tell the user:
    - The memory and the generated `AGENTS.md` / `.agents/` are local to this clone (listed in
      `.git/info/exclude`) and must never be committed to the project repository.
-   - To share memory between computers, set it up in Agent Workbench: Settings > Memory sync
-     (private GitHub repository, or a OneDrive / Google Drive folder). Until then the handoff stays
+   - To share memory between computers, run `/memory-sync` (a OneDrive / Google Drive
+     folder, or a private GitHub repository). Until then the handoff stays
      on this machine.
    - Only `.githooks/`, `.gitattributes` and the `CLAUDE.md` block (instructions, no memory content)
      may be committed, if the user wants. On every OTHER machine after cloning:

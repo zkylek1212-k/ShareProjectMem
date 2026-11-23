@@ -28,8 +28,9 @@ Canonical shared memory lives in `.project-memory/`.
 - `.project-memory/` and the generated entry files (`AGENTS.md`, `.agents/rules/shared-memory.md`)
   are local to this clone (`.git/info/exclude`). NEVER `git add` them to the project repository,
   not even with `-f`; the `.githooks/pre-commit` guard rejects it.
-- Where memory is kept is chosen in Agent Workbench: Settings > Memory sync.
-  - Off: `.project-memory/` is a plain folder; the handoff stays on this machine.
+- Where memory is kept is set once per machine with the shared-project-memory plugin:
+  `bash <plugin>/scripts/memory-sync.sh link <folder | owner/repo>` (Claude Code: `/memory-sync`).
+  - Not linked: `.project-memory/` is a plain folder; the handoff stays on this machine.
   - OneDrive / Google Drive folder: `.project-memory/` links into that folder; the cloud client
     uploads it.
   - Private GitHub repository: `.project-memory/` links into a clone of the user's private memory
@@ -41,9 +42,9 @@ Canonical shared memory lives in `.project-memory/`.
 - `git fetch` is read-only and always allowed. Everything that MUTATES the tree is restricted.
 - Committing the user's SOURCE CODE is their decision, not yours.
 - Do NOT automatically run `git pull --rebase`, `merge`, `reset`, or force-push on the project. Ever.
-- Syncing the private memory repository is done by Agent Workbench and the two memory scripts
-  (`status.sh` fast-forwards only with `MEM_AUTOSYNC=1`, a clean memory tree and no divergent
-  commits). Do not pull, rebase or push it by hand; if a script reports a conflict, REPORT and ask.
+- Syncing the private memory repository is done by the memory scripts only (`status.sh`
+  fast-forwards at startup when the memory tree is clean and has no divergent commits;
+  `MEM_AUTOSYNC=0` turns that off; `memory-sync.sh sync` commits, rebases and pushes). Do not pull, rebase or push it by hand; if a script reports a conflict, REPORT and ask.
 - If uncommitted changes exist, inspect them; never overwrite blindly.
 
 ## Working

@@ -37,8 +37,8 @@ If the threshold is met:
 bash .project-memory/commit-handoff.sh "docs(memory): <one-line summary of this session>"
 ```
 
-   It regenerates the block Codex and Antigravity auto-load, then saves according to Agent
-   Workbench: Settings > Memory sync — off: stays on this machine; OneDrive / Google Drive folder:
+   It regenerates the block Codex and Antigravity auto-load, then saves according to where
+   `.project-memory` points (set with the plugin's `memory-sync.sh link`) — a plain folder: stays on this machine; OneDrive / Google Drive folder:
    the cloud client uploads it; private GitHub repository: committed and pushed there. It never
    commits to the project repository. Tell the user what it printed; if memory sync is off, say the
    handoff is on this machine only. Do not commit or copy memory any other way.
